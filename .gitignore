@@ -2,3 +2,5 @@
 /invoice-service/node_modules
 /order-service/node_modules
 
+/invoice-service/dist
+/order-service/dist
