@@ -2,11 +2,9 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  Inject,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ClientProxy } from '@nestjs/microservices';
 import { Order, OrderStatus } from './schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { RmqService } from './rmq/rmq.service';
@@ -15,7 +13,6 @@ import { RmqService } from './rmq/rmq.service';
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
-    @Inject('ORDER_RMQ_SERVICE') private client: ClientProxy,
     private rmqService: RmqService
   ) {}
 
@@ -71,6 +68,7 @@ export class OrdersService {
 
       // Emit event when the order is shipped
       if (status === OrderStatus.SHIPPED) {
+        console.log(order.orderId)
         this.rmqService.emitOrderShipped(order.orderId)
       }
 

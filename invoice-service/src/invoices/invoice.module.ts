@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { Invoice, InvoiceSchema } from './schemas/invoice.schema';
 import { InvoiceController } from './invoice.controller';
 import { InvoiceService } from './invoice.service';
-import { OrderShippedListener } from './listeners/order-shipped.listener';
 
 @Module({
   imports: [
@@ -15,6 +14,6 @@ import { OrderShippedListener } from './listeners/order-shipped.listener';
     ]),
   ],
   controllers: [InvoiceController],
-  providers: [InvoiceService, OrderShippedListener],
+  providers: [InvoiceService],
 })
 export class InvoiceModule {}

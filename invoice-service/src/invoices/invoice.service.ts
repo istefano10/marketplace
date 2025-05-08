@@ -19,7 +19,7 @@ export class InvoiceService {
     if (!invoice || invoice.sentAt) return;
 
     invoice.sentAt = new Date();
-    await invoice.save();
     console.log(`Invoice for order ${orderId} sent at ${invoice.sentAt}`);
+    await invoice.save();
   }
 }

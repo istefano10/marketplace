@@ -8,10 +8,16 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceService } from './invoice.service';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('invoices')
 export class InvoiceController {
-  constructor(private readonly invoiceService: InvoiceService) {}
+  @EventPattern('msg_order')
+  manejarMensaje(@Payload() mensaje: string) {
+    console.log('✅ Mensaje recibido en InvoiceController:', mensaje);
+  }
+  
+  constructor(private readonly invoiceService: InvoiceService) { }
 
   @Post()
   @UseInterceptors(

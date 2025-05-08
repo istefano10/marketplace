@@ -17,4 +17,4 @@ import { InvoiceModule } from './invoices/invoice.module';
     InvoiceModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
