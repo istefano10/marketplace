@@ -1,3 +1,4 @@
+// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
@@ -12,10 +13,10 @@ async function bootstrap() {
   const RABBITMQ_QUEUE = configService.get<string>('RABBITMQ_QUEUE');
 
   if (!PORT || !RABBITMQ_URI || !RABBITMQ_QUEUE) {
-    throw new Error('Missing environment variables: PORT, RABBITMQ_URL, or RABBITMQ_QUEUE');
+    throw new Error('Missing environment variables: PORT, RABBITMQ_URI, or RABBITMQ_QUEUE');
   }
 
-  // 🟢 Aquí conectamos el microservicio (RabbitMQ)
+  // Conectar el microservicio (RabbitMQ)
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
@@ -26,7 +27,7 @@ async function bootstrap() {
   });
 
   try {
-    await app.startAllMicroservices(); // 🧠 Esto activa los @EventPattern
+    await app.startAllMicroservices(); // Activa los @EventPattern
     console.log(`✅ Microservice is listening for RabbitMQ events on queue: ${RABBITMQ_QUEUE}`);
 
     await app.listen(PORT);
