@@ -15,23 +15,6 @@ import { Order, OrderSchema } from './schemas/order.schema';
 
     // Load configuration globally
     ConfigModule,
-
-    // Register RabbitMQ Client asynchronously
-    ClientsModule.registerAsync([
-      {
-        name: 'ORDER_RMQ_SERVICE', // Name for the RabbitMQ client (for sending/receiving events)
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-          transport: Transport.RMQ,
-          options: {
-            urls: [configService.get<string>('RABBITMQ_URI')!], // Get RabbitMQ URI from environment
-            queue: configService.get<string>('RABBITMQ_QUEUE')!, // Get queue name from environment
-            queueOptions: { durable: false }, // Queue options
-          },
-        }),
-        inject: [ConfigService], // Inject ConfigService to access environment variables
-      },
-    ]),
   ],
   controllers: [OrdersController],
   providers: [
