@@ -32,7 +32,7 @@ let OrderShippedListener = class OrderShippedListener {
     handleOrderShipped(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(1111111111111111111111111111);
+                console.log('Evento recibido: order.shipped');
                 const payload = data;
                 console.log(`Received orderId: ${payload.orderId}`);
                 yield this.invoiceService.sendInvoice(payload.orderId);

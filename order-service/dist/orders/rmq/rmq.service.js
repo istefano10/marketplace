@@ -20,6 +20,7 @@ let RmqService = class RmqService {
         this.client = client;
     }
     emitOrderShipped(orderId) {
+        console.log(`Emitiendo el evento 'order.shipped' para el orderId: ${orderId}`);
         this.client.emit('order.shipped', { orderId }).subscribe({
             error: (err) => console.error('❌ Emit failed:', err),
         });
