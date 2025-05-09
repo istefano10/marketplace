@@ -51,9 +51,7 @@ export class InvoiceService {
 
     // Guardar la factura
     await invoice.save();
-    console.log(
-      `Invoice ${invoice.invoiceId} with orderId ${invoice.orderId} sent at ${invoice.sentAt}`,
-    );
+    console.log(`Invoice ${invoice.invoiceId} with orderId ${invoice.orderId} sent at ${invoice.sentAt}`);
     // Devolver la factura actualizada con la propiedad sentAt
     return invoice;
   }

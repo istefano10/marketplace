@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   mongo:
     image: mongo:latest
@@ -35,7 +33,7 @@ services:
     networks:
       - marketplace-network
     env_file:
-      - .env.docker
+      - order-service/.env.docker
 
   invoice-service:
     build: ./invoice-service
@@ -48,7 +46,7 @@ services:
     networks:
       - marketplace-network
     env_file:
-      - .env.docker
+      - invoice-service/.env.docker
 
 networks:
   marketplace-network:

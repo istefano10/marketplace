@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  const PORT = configService.get('PORT');
+  const PORT = configService.get<string>('PORT');
   const RABBITMQ_URI = configService.get<string>('RABBITMQ_URI');
   const RABBITMQ_QUEUE = configService.get<string>('RABBITMQ_QUEUE');
 
