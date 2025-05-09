@@ -1,0 +1,111 @@
+name: CI Pipeline for Microservices
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:latest
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.runCommand({ connectionStatus: 1 })'" 
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      rabbitmq:
+        image: rabbitmq:management
+        env:
+          RABBITMQ_DEFAULT_USER: user
+          RABBITMQ_DEFAULT_PASS: password
+        ports:
+          - 5672:5672
+          - 15672:15672
+        options: >-
+          --health-cmd="rabbitmqctl status"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      # Install dependencies for both services
+      - name: Install dependencies for order-service
+        run: |
+          cd order-service
+          npm install
+
+      - name: Install dependencies for invoice-service
+        run: |
+          cd invoice-service
+          npm install
+
+      # Build the order-service
+      - name: Build the order-service
+        run: |
+          cd order-service
+          npm run build
+
+      # Build the invoice-service
+      - name: Build the invoice-service
+        run: |
+          cd invoice-service
+          npm run build
+
+      # Run tests for order-service
+      - name: Run tests for order-service
+        run: |
+          cd order-service
+          npm test
+
+      # Run tests for invoice-service
+      - name: Run tests for invoice-service
+        run: |
+          cd invoice-service
+          npm test
+
+      # Build Docker image for order-service and push to Docker registry
+      - name: Docker Build and Push for order-service
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd order-service
+          docker build -t yourusername/order-service:$GITHUB_SHA .
+          docker tag yourusername/order-service:$GITHUB_SHA yourusername/order-service:latest
+          docker push yourusername/order-service:$GITHUB_SHA
+          docker push yourusername/order-service:latest
+
+      # Build Docker image for invoice-service and push to Docker registry
+      - name: Docker Build and Push for invoice-service
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd invoice-service
+          docker build -t yourusername/invoice-service:$GITHUB_SHA .
+          docker tag yourusername/invoice-service:$GITHUB_SHA yourusername/invoice-service:latest
+          docker push yourusername/invoice-service:$GITHUB_SHA
+          docker push yourusername/invoice-service:latest
+
+      # Clean up Docker images
+      - name: Clean up Docker images
+        run: docker system prune -f
