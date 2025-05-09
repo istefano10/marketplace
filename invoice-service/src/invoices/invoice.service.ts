@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { Invoice } from './schemas/invoice.schema';
 
 // Invoice Service to handle invoice-related actions (creating, sending, retrieving invoices)
 @Injectable()
 export class InvoiceService {
-  constructor(@InjectModel(Invoice.name) private invoiceModel: Model<Invoice>) {}
+  constructor(@InjectModel(Invoice.name) private invoiceModel: Model<Invoice>) { }
 
   /**
    * Creates a new invoice for an order.
@@ -39,24 +38,26 @@ export class InvoiceService {
    * @returns Promise that resolves when the invoice is sent successfully
    * @throws Error if the invoice is not found or already sent
    */
-  async sendInvoice(body: CreateInvoiceDto): Promise<void> {
-    // Retrieves the invoice based on the provided data (invoiceId and orderId)
-    const invoice = await this.invoiceModel.findOne(body);
-    
-    // If the invoice doesn't exist or it has already been sent, throw an error
+  async sendInvoice(createInvoiceDto: { invoiceId: string; orderId: string }) {
+    // Buscar la factura por invoiceId
+    const invoice = await this.invoiceModel.findOne({ invoiceId: createInvoiceDto.invoiceId });
+
     if (!invoice || invoice.sentAt) {
       throw new Error('Invoice not found or already sent');
     }
 
-    // Update the `sentAt` timestamp to the current time when the invoice is sent
+    // Actualizar la propiedad sentAt
     invoice.sentAt = new Date();
-    console.log(
-      `Invoice ${body.invoiceId} with orderId ${body.orderId} sent at ${invoice.sentAt}`,
-    );
 
-    // Save the updated invoice
+    // Guardar la factura
     await invoice.save();
+    console.log(
+      `Invoice ${invoice.invoiceId} with orderId ${invoice.orderId} sent at ${invoice.sentAt}`,
+    );
+    // Devolver la factura actualizada con la propiedad sentAt
+    return invoice;
   }
+
 
   /**
    * Finds an invoice by its associated orderId.

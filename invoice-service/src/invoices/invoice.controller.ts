@@ -11,8 +11,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceService } from './invoice.service';
 import { EventPattern, Payload } from '@nestjs/microservices';
-import { OrderService } from 'src/orders/orders.service';
-import { OrderStatus } from 'src/orders/order.schema';
+import { OrderService } from '../orders/orders.service';
+import { OrderStatus } from '../orders/order.schema';
 
 @Controller('invoices')
 export class InvoiceController {
