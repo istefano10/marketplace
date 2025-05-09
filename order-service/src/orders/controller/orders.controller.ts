@@ -54,16 +54,15 @@ export class OrdersController {
     @Param('id') id: string,
     @Body() status: { status: OrderStatus },
   ) {
-    const validStatuses = Object.values(OrderStatus);
-    if (!validStatuses.includes(status.status)) {
-      throw new BadRequestException('Invalid order status');
-    }
-
     try {
       return await this.ordersService.updateOrderStatus(id, status.status);
     } catch (error) {
       console.error(`Error updating status for order with id ${id}:`, error.message);
-      throw new NotFoundException(`Order with id ${id} not found`);
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Order with id ${id} not found`);
+      } else {
+        throw new BadRequestException('Error updating order status');
+      }
     }
   }
 

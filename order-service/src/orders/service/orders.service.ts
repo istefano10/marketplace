@@ -28,7 +28,6 @@ export class OrdersService {
       const order = new this.orderModel(createOrderDto);
       return await order.save();
     } catch (error) {
-      console.error('Error creating order:', error.message);
       throw new BadRequestException(
         'Error creating the order: ' + (error.message || 'Unknown error'),
       );

@@ -1,5 +1,4 @@
-// src/order/order.module.ts
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OrdersController } from './controller/orders.controller';
@@ -7,6 +6,7 @@ import { OrdersService } from './service/orders.service';
 import { RmqService } from './rmq/rmq.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schemas/order.schema';
+import { ValidateOrderStatusMiddleware } from './midlewares/validate-order-status.middleware';
 
 @Module({
   imports: [
@@ -33,4 +33,9 @@ import { Order, OrderSchema } from './schemas/order.schema';
   controllers: [OrdersController],
   providers: [OrdersService, RmqService],
 })
-export class OrdersModule {}
+export class OrdersModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Aplicar el middleware a la ruta de actualización de estado
+    consumer.apply(ValidateOrderStatusMiddleware).forRoutes('orders/:id/status');
+  }
+}
