@@ -12,9 +12,6 @@ export class Invoice {
   @Prop({ required: true })
   orderId: string;
 
-  @Prop({ required: true })
-  pdfUrl: string;
-
   @Prop()
   sentAt?: Date;
 }

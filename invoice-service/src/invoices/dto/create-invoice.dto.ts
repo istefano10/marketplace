@@ -1,5 +1,5 @@
 // src/invoice/dtos/create-invoice.dto.ts
-import { IsString, IsUrl } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateInvoiceDto {
   @IsString()
@@ -8,6 +8,4 @@ export class CreateInvoiceDto {
   @IsString()
   orderId: string;
 
-  @IsUrl()
-  pdfUrl: string;
 }

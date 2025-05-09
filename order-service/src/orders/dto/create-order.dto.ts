@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { OrderStatus } from '../schemas/order.schema';
 
 export class CreateOrderDto {
@@ -16,9 +16,11 @@ export class CreateOrderDto {
   sellerId: string;
 
   @IsNumber()
+  @Min(0)
   price: number;
 
   @IsNumber()
+  @Min(1)
   quantity: number;
 
   @IsEnum(OrderStatus)

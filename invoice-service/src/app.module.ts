@@ -15,6 +15,6 @@ import { InvoiceModule } from './invoices/invoice.module';
       inject: [ConfigService],
     }),
     InvoiceModule,
-  ],
+  ]
 })
 export class AppModule { }
