@@ -46,11 +46,9 @@ export class InvoiceController {
     private readonly orderService: OrderService) { }
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: null,
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', {
+    storage: multer.memoryStorage(),
+  }))
   async sendInvoice(
     @UploadedFile() file: Express.Multer.File,
     @Body() createInvoiceDto: CreateInvoiceDto,
