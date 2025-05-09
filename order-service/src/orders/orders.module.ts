@@ -2,8 +2,8 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
+import { OrdersController } from './controller/orders.controller';
+import { OrdersService } from './service/orders.service';
 import { RmqService } from './rmq/rmq.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schemas/order.schema';
