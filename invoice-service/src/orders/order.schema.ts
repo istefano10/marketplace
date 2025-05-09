@@ -11,13 +11,13 @@ export enum OrderStatus {
   SHIPPED = 'SHIPPED',
 }
 
-@Schema({ collection: 'orders' }) // asegura que busque la colección correcta
+@Schema({ collection: 'orders' })
 export class Order {
   @Prop({ required: true })
   orderId: string;
 
-  @Prop()
-  status: string;
+  @Prop({  enum: OrderStatus, default: OrderStatus.CREATED })
+  status: OrderStatus;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

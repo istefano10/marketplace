@@ -3,10 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 
 import { Invoice, InvoiceSchema } from './schemas/invoice.schema';
-import { InvoiceController } from './invoice.controller';
-import { InvoiceService } from './invoice.service';
+import { InvoiceController } from './controller/invoice.controller';
 import { OrderService } from 'src/orders/orders.service';
 import { Order, OrderSchema } from 'src/orders/order.schema';
+import { InvoiceService } from './service/invoice.service';
 
 @Module({
   imports: [
