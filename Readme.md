@@ -8,7 +8,7 @@ This project implements a simplified e-commerce system using a microservices arc
 - **TypeScript** (>= 4.5)
 - **MongoDB** (NoSQL DB)
 - **RabbitMQ** (asynchronous communication between services)
-- **Express.js** (REST API)
+- **Nest.js** (REST API)
 - **Docker + Docker Compose** (for local development)
 - **Jest** (only in `order-service` for now)
 
