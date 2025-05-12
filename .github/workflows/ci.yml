@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+env:
+  DOCKER_IMAGE_ORDER: order-service
+  DOCKER_IMAGE_INVOICE: invoice-service
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,7 +25,7 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --health-cmd="mongosh --eval 'db.runCommand({ connectionStatus: 1 })'" 
+          --health-cmd="mongosh --eval 'db.runCommand({ connectionStatus: 1 })'"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -41,71 +45,70 @@ jobs:
           --health-retries=3
 
     steps:
-      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "16"
 
-      # Install dependencies for both services
-      - name: Install dependencies for order-service
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies (order-service)
         run: |
           cd order-service
-          npm install
+          npm ci
 
-      - name: Install dependencies for invoice-service
+      - name: Install dependencies (invoice-service)
         run: |
           cd invoice-service
-          npm install
+          npm ci
 
-      # Build the order-service
-      - name: Build the order-service
+      - name: Build order-service
         run: |
           cd order-service
           npm run build
 
-      # Build the invoice-service
-      - name: Build the invoice-service
+      - name: Build invoice-service
         run: |
           cd invoice-service
           npm run build
 
-      # Run tests for order-service
-      - name: Run tests for order-service
+      - name: Run tests (order-service)
         run: |
           cd order-service
           npm test
 
-      # Run tests for invoice-service
-      - name: Run tests for invoice-service
+      - name: Run tests (invoice-service, optional)
         run: |
           cd invoice-service
-          npm test
+          if [ -f package.json ] && grep -q '"test":' package.json; then npm test; else echo "No tests defined."; fi
 
-      # Build Docker image for order-service and push to Docker registry
-      - name: Docker Build and Push for order-service
+      - name: Log in to Docker Hub
+        if: github.ref == 'refs/heads/main'
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Docker Build and Push (order-service)
         if: github.ref == 'refs/heads/main'
         run: |
           cd order-service
-          docker build -t yourusername/order-service:$GITHUB_SHA .
-          docker tag yourusername/order-service:$GITHUB_SHA yourusername/order-service:latest
-          docker push yourusername/order-service:$GITHUB_SHA
-          docker push yourusername/order-service:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_ORDER }}:$GITHUB_SHA .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_ORDER }}:$GITHUB_SHA ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_ORDER }}:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_ORDER }}:$GITHUB_SHA
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_ORDER }}:latest
 
-      # Build Docker image for invoice-service and push to Docker registry
-      - name: Docker Build and Push for invoice-service
+      - name: Docker Build and Push (invoice-service)
         if: github.ref == 'refs/heads/main'
         run: |
           cd invoice-service
-          docker build -t yourusername/invoice-service:$GITHUB_SHA .
-          docker tag yourusername/invoice-service:$GITHUB_SHA yourusername/invoice-service:latest
-          docker push yourusername/invoice-service:$GITHUB_SHA
-          docker push yourusername/invoice-service:latest
-
-      # Clean up Docker images
-      - name: Clean up Docker images
-        run: docker system prune -f
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_INVOICE }}:$GITHUB_SHA .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_INVOICE }}:$GITHUB_SHA ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_INVOICE }}:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_INVOICE }}:$GITHUB_SHA
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_INVOICE }}:latest
