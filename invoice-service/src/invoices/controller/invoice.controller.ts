@@ -6,6 +6,9 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  Param,
+  Get,
+  NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
@@ -15,6 +18,7 @@ import { OrderStatus } from '../../orders/order.schema';
 import { InvoiceService } from '../service/invoice.service';
 import { Express } from 'express';
 import * as multer from 'multer';
+import { Types } from 'mongoose';
 
 @Controller('invoices')
 export class InvoiceController {
@@ -71,6 +75,16 @@ export class InvoiceController {
         error.message || 'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  @Get(':id')
+  async getInvoice(@Param('id') id: string) {
+    try {
+      return await this.invoiceService.getInvoice(id);
+    } catch (error) {
+      console.error(`Error getting invoice with id ${id}:`, error.message);
+      throw new NotFoundException(`Invoice with id ${id} not found`);
     }
   }
 }

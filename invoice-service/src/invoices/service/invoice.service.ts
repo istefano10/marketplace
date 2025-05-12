@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Invoice } from '../schemas/invoice.schema';
@@ -65,5 +65,21 @@ export class InvoiceService {
   async findInvoiceByOrderId(orderId: string): Promise<Invoice | null> {
     // Searches for an invoice with the provided orderId
     return this.invoiceModel.findOne({ orderId }).exec();
+  }
+
+  async getInvoice(id: string): Promise<Invoice> {
+    try {
+      const invoice = await this.invoiceModel.findById(id).exec();
+      if (!invoice) {
+        throw new NotFoundException(`Invoice with ID ${id} not found`);
+      }
+      return invoice;
+    } catch (error) {
+      console.error(`Error retrieving invoice with ID ${id}:`, error.message);
+      if (error.name === 'CastError') {
+        throw new BadRequestException('Invalid invoice ID format');
+      }
+      throw new NotFoundException(`Invoice with ID ${id} not found`);
+    }
   }
 }
