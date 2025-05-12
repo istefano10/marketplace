@@ -88,7 +88,15 @@ describe('AppController (e2e)', () => {
   });
 
   it('should update the status of an order and send event to rabbitMQ', async () => {
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
+      .patch(`/orders/${createdOrder._id}/status`)
+      .send({ status: 'ACCEPTED' })
+      .expect(200);
+      await request(app.getHttpServer())
+      .patch(`/orders/${createdOrder._id}/status`)
+      .send({ status: 'SHIPPING_IN_PROGRESS' })
+      .expect(200);
+      const response = await request(app.getHttpServer())
       .patch(`/orders/${createdOrder._id}/status`)
       .send({ status: 'SHIPPED' })
       .expect(200);
